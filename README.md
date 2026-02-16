@@ -1,11 +1,29 @@
-# 🏏 IPL InsightHub – End-to-End Cricket Analytics Data Warehouse Using Medallion Architecture (MS SQL Server)
+# 🏏 IPL InsightHub  
+### End-to-End Cricket Analytics Platform | Data Engineering + Power BI
 
 ## 📌 Project Overview
 
-IPL InsightHub is a complete end-to-end analytical data warehouse project built using Microsoft SQL Server and Medallion Architecture (Bronze → Silver → Gold). This project processes raw IPL cricket datasets and transforms them into analytics-ready fact and dimension tables suitable for business intelligence and advanced reporting.
+IPL InsightHub is a complete end-to-end cricket analytics platform built on Microsoft SQL Server Data Warehouse + Power BI using Medallion Architecture (Bronze → Silver → Gold).
 
-The project demonstrates real-world data engineering concepts such as ETL pipelines, layered architecture, data cleansing, dimensional modeling, surrogate keys, and analytical aggregation. The Gold layer is optimized for visualization tools like Power BI.
+Raw Indian Premier League datasets are ingested, cleansed, modeled into a star schema, and finally visualized through an interactive Power BI dashboard.
 
+This project demonstrates real-world Data Engineering + Analytics Engineering + BI Reporting concepts including:
+
+  -ETL pipelines using stored procedures
+  
+  -Layered medallion architecture
+  
+  -Data cleansing & standardization
+  
+  -Dimensional modeling
+  
+  -Surrogate keys
+  
+  -Analytical fact tables
+  
+  -Business KPI dashboards
+
+The Gold layer directly feeds Power BI for professional-grade reporting.
 ---
 
 ## 🏗️ Architecture – Medallion Pattern
@@ -63,15 +81,13 @@ Purpose:
 Dimensions:
 - dim_team  
 - dim_player  
-- dim_venue  
-- dim_season  
-- dim_match  
 
 Facts:
 - fact_batting  
 - fact_bowling  
 - fact_match  
-- fact_deliveries  
+- fact_deliveries
+- fact-innings  
 
 Features:
 - ROW_NUMBER surrogate keys
@@ -156,57 +172,316 @@ Gold tables are now ready for analytics.
 
 ---
 
-## 📊 Example Analytics Use Cases
+## 📊 Power BI Dashboard Layer
 
-- Total runs per season  
-- Top run scorers  
-- Best economy bowlers  
-- Team win percentages  
-- Venue-wise performance  
-- Player consistency  
-- Match outcome analysis  
+- Connected directly to **Silver Layer**
+- Built interactive analytical dashboards using Power BI
+- Implemented slicer-driven exploration by:
+  - Season
+  - Team
+  - Venue
+  - Player
+- Designed **KPI-first layout** for executive-level insights
+
+---
+
+## 🔹 Batting Analytics
+
+- Total Runs  
+- Strike Rate  
+- Boundary Count (4s & 6s)  
+- Top Run Scorers  
+- Player Consistency Metrics  
+
+---
+
+## 🔹 Bowling Analytics
+
+- Economy Rate  
+- Total Wickets  
+- Best Powerplay Bowlers  
+- Death Overs Economy  
+
+---
+
+## 🔹 Match & Team Insights
+
+- Team Win Percentage  
+- Matches Played vs Won  
+- Toss Impact Analysis  
+- Venue-wise Performance  
+- Season Trends  
+
+---
+
+## 🔹 Delivery-Level Insights
+
+- Phase-wise Runs (Powerplay / Middle / Death)
+- Ball-by-Ball Scoring Patterns  
+
+---
+
+# 📐 Advanced Cricket Analytics – Custom DAX Measures
+
+This section documents key **advanced DAX measures** used in the Power BI Cricket Analytics Dashboard.  
+These metrics enable deep player, team, and match-level insights such as batting peaks, bowling efficiency, clutch performance, and collapses.
+
+All measures are built on top of the **Silver Layer** using dimensional modeling and slicer-aware calculations.
+
+---
+
+## 🏏 Batting Metrics
+
+### 🔹 Highest Batting Score (B_hig_score)
+
+Returns the highest individual score for the selected player.
+
+```DAX
+B_hig_score =
+CALCULATE(
+    MAX('silver batting_scorecard'[RUNS]),
+    TREATAS(
+        VALUES(dim_player[Player]),
+        'silver batting_scorecard'[BATTER]
+    )
+)
+```
+🎯 Bowling Metrics
+
+🔹 Bowling Average (B_avg)
+
+Runs conceded per wicket for the selected bowler.
+```DAX
+B_avg =
+CALCULATE(
+    DIVIDE(
+        SUM('silver bowling_scorecard'[RUNS_CONCEDED]),
+        SUM('silver bowling_scorecard'[WICKETS]),
+        0
+    ),
+    TREATAS(
+        VALUES(dim_player[Player]),
+        'silver bowling_scorecard'[BOWLER]
+    )
+)
+```
+🔹 Bowling Economy (B_Economy)
+
+Runs conceded per over.
+```DAX
+B_Economy =
+DIVIDE(
+    'silver deliveries_ballbyball'[B_Totalruns] * 6,
+    [B_Balls Delivered],
+    0
+)
+```
+🔹 Best Wickets
+
+Maximum wickets taken in a match by the selected bowler.
+```DAX
+Best Wickets =
+CALCULATE(
+    MAX('silver bowling_scorecard'[WICKETS]),
+    TREATAS(
+        VALUES(dim_player[Player]),
+        'silver bowling_scorecard'[BOWLER]
+    )
+)
+```
+🔹 Best Runs (for Best Bowling Figure)
+
+Finds the minimum runs conceded for the highest wicket haul.
+```DAX
+Best Runs =
+VAR BW = [Best Wickets]
+RETURN
+MINX(
+    FILTER(
+        ALL('silver bowling_scorecard'),
+        'silver bowling_scorecard'[WICKETS] = BW
+            && 'silver bowling_scorecard'[BOWLER]
+                IN VALUES(dim_player[Player])
+    ),
+    'silver bowling_scorecard'[RUNS_CONCEDED]
+)
+```
+🔹 Best Figure Player Name
+
+Identifies the bowler with the best bowling figure.
+```DAX
+Best Figure PN =
+CALCULATE(
+    SELECTEDVALUE('silver bowling_scorecard'[BOWLER]),
+    TOPN(
+        1,
+        'silver bowling_scorecard',
+        'silver bowling_scorecard'[WICKETS] * 100000
+            - 'silver bowling_scorecard'[RUNS_CONCEDED],
+        DESC
+    )
+)
+```
+🔄 Match Momentum Metrics
+
+🔹 Comeback Percentage
+
+Measures how often teams convert comeback situations into wins.
+```DAX
+Comeback_% =
+DIVIDE([Comeback_Wins], [Matches_Won])
+```
+🔹 Death Overs Economy
+
+Bowling economy during death overs.
+```DAX
+Death_over economy =
+DIVIDE(
+    [Death_Over_Runs_Conceded],
+    [Death_over_Balls Delivered]/6,
+    0
+)
+```
+🔹 Powerplay Economy
+
+Bowling economy during Powerplay.
+```DAX
+PP Economy =
+DIVIDE([PP Runs conceded],([PP Balls Delivered]/6))
+```
+🧠 Team Intelligence Metrics
+🔹 Team Clutch Wins
+
+Counts matches won by narrow margins (≤10 runs or ≤2 wickets).
+```DAX
+Team_Clutch_Wins =
+VAR Team = SELECTEDVALUE(dim_team[Team])
+
+RETURN
+CALCULATE(
+    DISTINCTCOUNT('silver matches'[MATCH_ID]),
+    FILTER(
+        ALL('silver matches'),
+        (
+            (
+                NOT ISBLANK('silver matches'[WIN_BY_RUNS])
+                && 'silver matches'[WIN_BY_RUNS] <= 10
+            )
+            ||
+            (
+                NOT ISBLANK('silver matches'[WIN_BY_WICKETS])
+                && 'silver matches'[WIN_BY_WICKETS] <= 2
+            )
+        )
+        &&
+        'silver matches'[WINNER] = Team
+    )
+)
+```
+🔹 Matches Won
+
+Total matches won by selected team.
+```DAX
+Matches_Won =
+VAR Team =
+    SELECTEDVALUE(dim_team[Team])
+
+RETURN
+CALCULATE(
+    DISTINCTCOUNT('silver matches'[MATCH_ID]),
+    FILTER(
+        ALL('silver matches'),
+        'silver matches'[winner] = Team
+    )
+)
+```
+🔹 Final Wins
+
+Total finals won.
+```DAX
+Final_Wins =
+CALCULATE(
+    DISTINCTCOUNT('silver matches'[MATCH_ID]),
+    'silver matches'[EVENT_STAGE] = "Final"
+)
+```
+🔹 Collapse Index
+
+Counts innings where a team collapses (under 40 runs with ≥5 wickets lost).
+```DAX
+Collapse_Index =
+VAR Team = SELECTEDVALUE(dim_team[Team])
+
+RETURN
+CALCULATE(
+    COUNTROWS('silver innings_total'),
+    FILTER(
+        ALL('silver innings_total'),
+        'silver innings_total'[BATTING_TEAM] = Team
+            &&
+        'silver innings_total'[INNINGS] <= 2
+            &&
+        'silver innings_total'[RUNS] < 40
+            &&
+        'silver innings_total'[WICKETS] >= 5
+    )
+)
+```
+## 📈 Dashboard Capabilities
+
+- KPI Cards: Runs, Wickets, Strike Rate, Economy  
+- Top-N Player Rankings  
+- Season / Team / Venue Slicers  
+- Drill-through & Cross-filtering  
+- Phase-based Bowling Analysis  
+- Star-schema optimized semantic model  
+- Performance-focused relationships  
+- Reusable DAX measures  
+- Clean analytical UI design  
 
 ---
 
 ## 🚀 Key Skills Demonstrated
 
 - SQL Server Data Warehousing  
-- Medallion Architecture  
-- ETL using Stored Procedures  
+- Medallion Architecture (Bronze / Silver / Gold)  
+- ETL Pipelines using Stored Procedures  
 - Dimensional Modeling  
-- Surrogate Key Generation  
+- Surrogate Key Implementation  
 - Star Schema Design  
-- Data Cleaning & Transformation  
-- Analytical Data Engineering  
+- Data Cleansing & Standardization  
+- Power BI Data Modeling  
+- Advanced DAX Measures  
+- End-to-End Analytics Engineering  
 
 ---
 
 ## 🎯 Ideal For
 
-- Data Engineering portfolios  
-- Final year academic projects  
-- Resume showcase  
-- Interview discussions  
-- BI dashboard foundations  
+- Data Engineering Portfolios  
+- Final Year Academic Projects  
+- Resume Showcases  
+- Technical Interviews  
+- Business Intelligence Foundations  
 
 ---
 
 ## 🔮 Future Enhancements
 
-- Incremental loading pipelines  
+- Incremental Data Loading  
 - Slowly Changing Dimensions (SCD Type 2)  
-- Performance tuning & indexing  
-- Power BI dashboards  
-- Player clustering and ML analytics  
-- Workflow orchestration using Airflow  
+- Query Performance Optimization & Indexing  
+- Advanced Power BI Visualizations  
+- Player Clustering & Machine Learning Models  
+- Workflow Orchestration using Airflow  
 
 ---
 
 ## 👨‍💻 Author
 
-M. Lakshmi Narasimha  
-Data Science & Data Engineering Enthusiast  
+**M. Lakshmi Narasimha**  
+_Data Science & Data Engineering Enthusiast_
 
 ---
 
-## ⭐ If you like this project, please give it a star on GitHub!
+⭐ If you found this project useful, consider starring the repository!
