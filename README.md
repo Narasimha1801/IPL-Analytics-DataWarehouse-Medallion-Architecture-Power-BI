@@ -103,30 +103,45 @@ Script:
 
 IPL-Analytics-Data-Warehouse/
 
-├── Images/
-│   ├── Dash-1.png
-│   ├── Dash-2.png
-│   ├── Blower-stats.png
-│   ├── Clutch per.png
-│   ├── Deff vs Chase.png
-│   ├── PP Strike rate.png
-│   └── Player of the match count.png
+Images/
+- Dash-1.png
+- Dash-2.png
+- Blower-stats.png
+- Clutch per.png
+- Deff vs Chase.png
+- PP Strike rate.png
+- Player of the match count.png
 
-├── Power BI Dashboard/
-│   ├── IPL_Dashbord.pbix
-│   └── IPL_Dashbord.pdf
+Power BI Dashboard/
+- IPL_Dashbord.pbix
+- IPL_Dashbord.pdf
 
-├── datasets/
+datasets/
+- matches_fixed_full1170.csv
+- batting_scorecard.csv
+- bowling_scorecard.csv
+- deliveries_ball_by_ball_corrected.csv
+- innings_totals.csv
 
-├── scripts/
-│   ├── init_database.sql
-│   ├── bronze/
-│   ├── silver/
-│   └── gold/
+scripts/
+- init_database.sql
 
-├── LICENSE
-└── README.md
+bronze/
+- bronze_ddl.sql
+- proc_load_bronze_ipl.sql
 
+silver/
+- silver_ddl.sql
+- proc_insert_silver.sql
+
+gold/
+- gold_ddl.sql
+
+LICENSE
+
+README.md
+
+---
 ---
 
 ## ⚙️ Setup Instructions
