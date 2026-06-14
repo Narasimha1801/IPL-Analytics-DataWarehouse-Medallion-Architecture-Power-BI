@@ -142,7 +142,6 @@ LICENSE
 README.md
 
 ---
----
 
 ## ⚙️ Setup Instructions
 
