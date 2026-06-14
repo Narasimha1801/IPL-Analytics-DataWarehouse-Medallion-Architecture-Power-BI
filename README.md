@@ -103,29 +103,31 @@ Script:
 
 IPL-Analytics-Data-Warehouse/
 
-datasets/
-- matches_fixed_full1170.csv  
-- batting_scorecard.csv  
-- bowling_scorecard.csv  
-- deliveries_ball_by_ball_corrected.csv  
-- innings_totals.csv  
+IPL-Analytics-Data-Warehouse/
 
-scripts/
-- init_database.sql  
+├── Images/
+│   ├── Dash-1.png
+│   ├── Dash-2.png
+│   ├── Blower-stats.png
+│   ├── Clutch per.png
+│   ├── Deff vs Chase.png
+│   ├── PP Strike rate.png
+│   └── Player of the match count.png
 
-bronze/
-- bronze_ddl.sql  
-- proc_load_bronze_ipl.sql  
+├── Power BI Dashboard/
+│   ├── IPL_Dashbord.pbix
+│   └── IPL_Dashbord.pdf
 
-silver/
-- silver_ddl.sql  
-- proc_insert_silver.sql  
+├── datasets/
 
-gold/
-- gold_ddl.sql  
+├── scripts/
+│   ├── init_database.sql
+│   ├── bronze/
+│   ├── silver/
+│   └── gold/
 
-README.md
-
+├── LICENSE
+└── README.md
 ---
 
 ## ⚙️ Setup Instructions
@@ -220,6 +222,115 @@ Gold tables are now ready for analytics.
 - Ball-by-Ball Scoring Patterns  
 
 ---
+
+# 📊 Power BI Dashboard Showcase
+
+The analytics layer is visualized using Power BI and connected directly to the SQL Server Data Warehouse. The dashboard enables interactive exploration of IPL data across seasons, teams, players, and match situations.
+
+---
+
+## 🏏 Executive Dashboard
+
+<p align="center">
+  <img src="Images/Dash-1.png" width="95%">
+</p>
+
+### Key Insights
+- Overall IPL KPIs
+- Team Win Percentage Analysis
+- IPL Championship Distribution
+- Bat First vs Chase Comparison
+- Team Clutch Performance
+- Season-wise Trends
+
+---
+
+## 🎯 Player Analytics Dashboard
+
+<p align="center">
+  <img src="Images/Dash-2.png" width="95%">
+</p>
+
+### Key Insights
+- Highest Individual Score
+- Most Runs
+- Most Wickets
+- Best Bowling Figures
+- Batter Performance Metrics
+- Bowler Performance Metrics
+- Player Awards Analysis
+
+---
+
+# 📈 Detailed Visual Insights
+
+<table align="center">
+<tr>
+<td align="center">
+
+### 🏆 Player of the Match Leaders
+
+<img src="Images/Player of the match count.png" width="450">
+
+</td>
+
+<td align="center">
+
+### ⚡ Powerplay Strike Rate Leaders
+
+<img src="Images/PP Strike rate.png" width="450">
+
+</td>
+</tr>
+</table>
+
+---
+
+<table align="center">
+<tr>
+<td align="center">
+
+### 🎯 Bowler Performance Overview
+
+<img src="Images/Blower-stats.png" width="450">
+
+</td>
+
+<td align="center">
+
+### 🔥 Team Clutch Performance
+
+<img src="Images/Clutch per.png" width="450">
+
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+### 🏏 Bat First vs Chase Wins
+
+<img src="Images/Deff vs Chase.png" width="350">
+
+</div>
+
+---
+
+## 📌 Dashboard Features
+
+- Interactive Season Slicers
+- Team-Level Performance Analysis
+- Player-Level Performance Tracking
+- Batting & Bowling KPIs
+- Phase-Based Match Analytics
+- Cross Filtering & Drillthrough
+- Dynamic DAX Calculations
+- Executive-Level Dashboard Design
+
+---
+
 
 # 📐 Advanced Cricket Analytics – Custom DAX Measures
 
