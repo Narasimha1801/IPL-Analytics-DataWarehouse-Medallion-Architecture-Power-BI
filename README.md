@@ -102,9 +102,6 @@ Script:
 ## 📁 Project Folder Structure
 
 IPL-Analytics-Data-Warehouse/
-
-IPL-Analytics-Data-Warehouse/
-
 ├── Images/
 │   ├── Dash-1.png
 │   ├── Dash-2.png
